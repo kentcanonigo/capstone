@@ -1,0 +1,909 @@
+﻿COMPARATIVE ANALYSIS OF SINGLE-SITE AND MULTI-SITE PPG SYSTEMS FOR NON-INVASIVE GLUCOSE ESTIMATION
+
+
+A Thesis Project
+Presented to the Faculty of
+The Department of Computer Engineering of the
+Cebu Technological University - Main Campus 
+Cebu City, Philippines 
+
+
+
+
+In Partial Fulfillment of the 
+Requirements for the Degree 
+Bachelor of Science in 
+Computer Engineering 
+
+
+By 
+
+
+Ibarra, Laurence Miguel A.
+Canonigo, Rigel Kent Y.
+Suralta, Ivan G.
+
+
+Engr. Jayson Jueco
+Adviser 
+May 2025
+Table of Contents
+List of Figures        4
+List of Tables        5
+Introduction        6
+1.1 Background of the Study        6
+1.2 Statement of the Problem        7
+1.2.1  Objectives        7
+1.3 Significance of the Study        8
+1.4 Scope and Limitations        9
+1.5 Definition of Terms        12
+Review of Related Literature        14
+2.1 Theoretical Foundations        14
+2.1.1 Photoplethysmography (PPG)        14
+2.1.2 PPG Blood glucose estimation techniques        15
+2.1.2a AI and Machine Learning        16
+2.1.2b Pre-processing techniques        17
+2.1.2c Regression Models        21
+2.1.2d Feature Extraction        22
+2.2 Single-Site Techniques        25
+2.2 Multi-Site Techniques        28
+2.3 Physiological Basis for Glucose Estimation Using PPG as Machine Learning Inputs        30
+2.4 Research Gaps and Opportunities        31
+Methodology        33
+3.1 Research Design        33
+3.2 Research Workflow        37
+3.3 Research Environment        40
+3.4 Research Respondents        41
+3.5 Experimental Setup        42
+3.5.1 Hardware Components        42
+3.5.2 Data Collection Sites & Experimental Conditions        44
+3.5.3 Experimental Conditions        45
+3.6 Preprocessing, Feature Extraction, and Multi-Site Signal Fusion for PPG-Based Glucose Estimation        46
+3.6.1. Preprocessing Techniques        46
+3.6.2 Feature Extraction        49
+3.6.3 Multi-Site Signal Fusion Algorithms        50
+3.6.4 Machine Learning for Glucose Estimation        52
+3.6.5 Model Training and Optimization        57
+3.6.6 Model Evaluation & Performance Metrics        58
+3.6.7 Baseline Comparison & Validation        59
+3.6.8 Summary of Model Training and Evaluation        60
+3.7 Conceptual Drawings of Devices Used        61
+3.7.1 Fingertip Case        61
+3.7.2 Wrist Case        63
+3.7.3 Earlobe Case        64
+3.8 Schematic Design        65
+Gantt Chart        66
+Budgetary Requirement        67
+References        68
+List of Figures
+Figure 3.1: Conceptual Framework for Single-Site vs. Multi-Site PPG Glucose Estimation
+Figure 3.2: Research Workflow for Single-Site vs. Multi-Site PPG Glucose Estimation with Baseline Validation
+Figure 3.3: Multi-Sensor Interfacing Architecture for PPG Data Acquisition
+Figure 3.4: Location Map of CTU Main Campus - Medical Clinic
+Figure 3.5: Isometric Front View of the Fingertip Device
+Figure 3.6: Isometric Back View of the Fingertip Device
+Figure 3.7: Isometric View of the Wrist Device
+Figure 3.8: Isometric View of the Earlobe Device[a]
+Figure 3.8: Schematic Diagram of the Interfacing between the ESP32, TCA9548A and MAX30102
+________________
+List of Tables
+Table 3.1: Data Collection Sites and Their Characteristics
+Table 3.2: Experimental Conditions for Data Collection
+Table 3.3: Input and Output Variables for Glucose Estimation
+Table 3.4: Selected Features for Glucose Estimation
+Table 3.5: Dataset Splitting and Preprocessing Overview
+Table 3.6: Evaluation Metrics for Model Performance
+Table 3.7: Gantt Chart for Project Milestones
+Table 3.8: Materials and Resources Expenses
+Chapter 1
+Introduction
+
+
+1.1        Background of the Study
+The development of non-invasive glucose monitoring (NIGM) technologies aims to provide an alternative to traditional finger-pricking and continuous glucose monitors (CGMs), which, despite their accuracy, remain invasive, costly, and inconvenient for long-term use. As diabetes prevalence continues to rise, the demand for painless, real-time, and affordable glucose monitoring solutions has intensified. Among the emerging technologies, photoplethysmography (PPG) and near-infrared (NIR) spectroscopy have gained attention due to their ability to estimate glucose levels non-invasively by analyzing optical signal variations in blood circulation [1].
+Recent advancements in machine learning (ML) and deep learning (DL) have further enhanced the accuracy of PPG and NIR-based glucose estimation models. AI-driven models applied to single-site PPG signals have achieved glucose prediction accuracies ranging from 76% to 92%, with deep learning models significantly outperforming traditional machine learning approaches. However, despite these advancements, the review emphasizes several persistent challenges in single-site PPG-based glucose estimation, including motion artifacts, physiological variability (e.g., skin tone, blood perfusion), and sensitivity to external conditions (e.g., ambient light, temperature, or sweat accumulation). These factors can introduce inconsistencies in signal quality, leading to decreased accuracy and reliability in real-world applications [1].
+Moreover, while the review highlights progress in NIR-based continuous glucose monitoring (CGMs) and other non-invasive technologies, it notes that most studies rely on single-site PPG signals, typically obtained from the fingertip. This site-specific dependency introduces limitations in robustness and generalizability, as glucose-related physiological changes may vary across different body locations. Despite the potential of multi-site PPG, which involves collecting signals from multiple body sites (e.g., fingertip, wrist, earlobe), existing research has largely overlooked its viability for improving glucose prediction accuracy and minimizing site-specific artifacts [1].
+
+        
+1.2        Statement of the Problem
+Current non-invasive blood glucose monitoring systems rely on single-site PPG signals, such as those from the fingertip, but face challenges with site-specific variability, motion artifacts, and physiological differences, which limit their accuracy. Most studies focus solely on single-site PPG data and do not explore the potential advantages of multi-site PPG systems, which could integrate signals from locations like the fingertip, wrist, and earlobe to mitigate site-specific artifacts, improve redundancy, and enhance glucose prediction accuracy [1].
+However, multi-site PPG introduces additional challenges, including signal synchronization, noise reduction, and data fusion, which remain underexplored. This study proposes a comparative analysis of single-site versus multi-site PPG glucose estimation to determine whether multi-site systems offer superior accuracy. Additionally, it will develop smoothing and fusion algorithms and implement machine learning models to optimize glucose prediction.
+
+
+1.2.1         Objectives
+1. Identify and evaluate optimal PPG measurement sites (e.g., fingertip, wrist, and earlobe) by analyzing signal quality, artifact susceptibility, and physiological variability to determine their impact on glucose estimation accuracy.[b][c]
+2. Implement and assess signal processing techniques, including smoothing algorithms for noise reduction and fusion algorithms for multi-site signal integration, to improve data quality for glucose estimation.
+3. Compare and analyze the performance of single-site versus multi-site PPG glucose estimation, evaluating their relative accuracy, stability, and sensitivity to external factors across different conditions.
+
+
+1.3        Significance of the Study
+The results of this study will provide preliminary insights into the effectiveness of multi-site PPG glucose estimation and the development of smoothing and fusion algorithms for improving signal quality. This research aims to contribute to the advancement of non-invasive glucose monitoring technologies, particularly in the preprocessing stage of PPG-based glucose estimation. Furthermore, this study will be beneficial to the following:
+Potential Clinical Relevance. This study explores the feasibility of multi-site PPG for non-invasive glucose estimation in a non-diabetic population. While not directly intended for diabetes management in this phase, the findings could contribute to future developments in early-stage glucose monitoring, wellness tracking, or identifying potential biomarkers relevant to metabolic health. Improved non-invasive methods could eventually offer less invasive and more accessible glucose tracking solutions.   
+
+Medical and Health Professionals. The study's findings can inform health professionals and medical researchers about the comparative performance of single-site versus multi-site PPG methods in non-diabetic individuals. It may guide the development and validation requirements for more accurate, non-invasive glucose monitoring systems that could serve as screening or supplementary tools in the future.   
+
+Biomedical and Engineering Researchers. The research will serve as a foundation for future developments in signal processing, fusion algorithms, and wearable health monitoring systems. By addressing the challenges of multi-site data integration, this study will contribute to ongoing efforts in biomedical signal enhancement and non-invasive glucose monitoring research.
+
+Technology Developers. Companies and individuals developing wearable health devices and non-invasive monitoring technologies can benefit from the study’s findings on signal preprocessing techniques, improving the accuracy and reliability of future commercial glucose monitoring devices.
+
+Future Researchers. The findings of this study will serve as a reference for future studies exploring multi-site PPG applications, signal processing innovations, and AI-driven glucose estimation models. It will also highlight potential areas for further investigation, including validation, clinical trials, and the integration of additional sensor modalities.
+________________
+1.4        Scope and Limitations
+Scope
+This study will be conducted at the Medical Clinic of Cebu Technological University Main Campus and will focus on the comparative analysis of single-site versus multi-site PPG glucose estimation accuracy in non-diabetic participants. Given this focus, the study will adopt simple machine learning models (linear regression ) to ensure interpretability and computational efficiency. Additionally, preprocessing and feature extraction techniques will be kept minimal, prioritizing essential noise reduction and feature selection to facilitate a direct comparison between single-site and multi-site PPG signals.
+The study will cover three key areas:
+1. Site Selection and Signal Evaluation – Identify and assess PPG measurement locations (e.g., fingertip, wrist, and earlobe) to determine their impact on signal quality, motion artifacts, and glucose estimation accuracy.
+2. Implementation of Smoothing and Fusion Algorithms – Apply lightweight noise reduction techniques (e.g., Savitzky-Golay filtering, baseline drift correction) to enhance PPG signals. Implement computationally simple fusion methods (e.g., weighted averaging and decision-level fusion) to integrate multi-site data.
+3. Comparative Performance Analysis and Model Evaluation – Compare single-site vs. multi-site glucose estimation accuracy using Linear Regression. Evaluate performance using Mean Absolute Relative Difference (mARD) and validate against invasive glucose readings obtained via a standard glucometer.
+________________
+Limitations
+This study exclusively involves non-diabetic participants to establish baseline performance characteristics and reduce the physiological variability often associated with diabetes mellitus; consequently, the findings concerning PPG-based glucose estimation may not be directly generalizable to individuals managing diabetes. Regarding the glucose estimation methodology, the study intentionally employs interpretable models like linear regression as the primary tool. While this facilitates a clear comparison between single-site and multi-site PPG data inputs and the impact of signal fusion techniques, it means the investigation prioritizes understanding the fundamental effect of data source strategies over optimizing predictive accuracy using more complex, computationally intensive machine learning models that might capture intricate non-linear glucose dynamics more effectively.
+Furthermore, the research is conducted within a controlled clinical setting, utilizing an invasive glucometer for essential reference measurements and validation. While this setup allows for careful data acquisition, performance observed under these conditions may differ significantly in less predictable, real-world ambulatory environments where factors like movement and environmental changes are more pronounced. It must also be noted that this study does not encompass clinical validation against recognized medical gold standards, such as continuous glucose monitoring (CGM) systems or laboratory-based plasma glucose assays. The investigation scope is also deliberately restricted solely to the photoplethysmography (PPG) modality, thereby excluding potential insights or comparative performance data from other non-invasive sensing approaches like Near-Infrared (NIR) spectroscopy or electrochemical sensors.
+Finally, despite the application of specific signal preprocessing algorithms and multi-site fusion techniques designed to enhance signal quality, inherent physiological variability remains a significant challenge. Factors intrinsic to individuals, such as variations in skin pigmentation, localized tissue perfusion dynamics, hydration status, and residual motion artifacts not fully mitigated by processing, can still introduce variability in the acquired PPG signals. This physiological noise floor may inherently limit the achievable accuracy and consistency of non-invasive glucose estimations derived from PPG across diverse populations and under varied measurement conditions.
+________________
+
+
+1.5        Definition of Terms
+Photoplethysmography (PPG): A non-invasive optical technique that measures blood volume changes in tissues by analyzing light absorption and reflection. It is widely used in health monitoring applications such as heart rate, oxygen saturation, and glucose estimation.
+Non-Invasive Glucose Monitoring (NIGM): A method of estimating blood glucose levels without the need for invasive procedures such as finger-pricking or subcutaneous sensors, aimed at providing a painless and convenient alternative for diabetes management.
+Single-Site PPG System: A photoplethysmography system that collects data from a single anatomical location, such as the fingertip, to estimate physiological parameters like glucose levels. These systems are prone to site-specific artifacts and variability.
+Multi-Site PPG System: A photoplethysmography approach that collects signals from multiple anatomical locations (e.g., fingertip, wrist, earlobe) to improve data reliability, reduce artifacts, and enhance glucose estimation accuracy.
+Motion Artifacts: Disturbances in PPG signal quality caused by physical movement or environmental factors, which can significantly affect the accuracy of single-site glucose monitoring systems.
+Weighted Averaging Fusion: A signal fusion technique that combines data from multiple PPG measurement sites by assigning weights based on signal quality, ensuring that higher-quality signals contribute more to the final glucose estimation.
+Decision-Level Fusion: A method of integrating multi-site PPG data by selecting the most reliable signal dynamically, based on predefined criteria like signal quality index (SQI), to improve estimation accuracy.
+Mean Absolute Relative Difference (mARD): A metric used to evaluate the accuracy of glucose estimation models by measuring the percentage error between predicted and reference glucose values.
+Savitzky-Golay Filtering: A signal preprocessing technique used to smooth PPG waveforms while preserving key features, such as peaks and valleys, necessary for accurate feature extraction.
+Baseline Drift Correction: A preprocessing method that removes slow, low-frequency fluctuations in PPG signals caused by factors like respiration or sensor movement, ensuring a stable signal for glucose estimation.
+
+
+
+
+________________
+
+
+Chapter 2
+Review of Related Literature
+This chapter reviews the existing literature on non-invasive glucose estimation, with a particular focus on comparing single-sensor and multi-sensor approaches. It examines the limitations of single-sensor systems, including challenges like signal noise which hinder their accuracy and reliability. In contrast, multi-sensor systems leverage complementary data from various sensors to overcome these challenges, offering improved robustness and precision.
+Through this review, the chapter aims to establish the theoretical and practical foundations for understanding the advantages and drawbacks of these two approaches. The analysis also highlights gaps in existing research, such as insufficient studies on multi-sensor integration and the need for solutions tailored to diverse populations. These insights underscore the significance of a comparative study to advance non-invasive glucose monitoring technologies and optimize their usability and effectiveness.
+
+
+2.1 Theoretical Foundations
+Non-invasive glucose monitoring systems leverage advanced scientific principles and sensor technologies to estimate glucose levels through indirect measurement of physiological parameters. These systems aim to reduce reliance on traditional invasive methods, such as finger-prick blood sampling, by harnessing innovations in biophysics, optics, and signal processing. This section delves into the theoretical underpinnings of key technologies and methodologies that underpin non-invasive glucose monitoring, with a focus on photoplethysmography (PPG) and the algorithms used to estimate blood glucose levels.
+2.1.1 Photoplethysmography (PPG)
+Photoplethysmography (PPG) is a non-invasive optical technique used to measure blood volume changes in tissues over time. PPG operates on the principle of light absorption and reflection through the blood vessels [3]. In essence, a light is shined onto the skin and interacts with the blood vessels. As blood volume changes with each heartbeat, the reflected light also fluctuates. A photodetector is then used to capture the reflected light and convert it into an electrical signal. A waveform is then generated from this electrical signal which represents the pulsatile changes in blood volume.
+PPG is commonly employed in heart rate monitoring, oxygen saturation (SpO₂) measurement, and, more recently, non-invasive glucose monitoring. The importance of the PPG signal stems from the fact that it can be easily acquired using non-invasive and affordable sensors [4]. This wave is displayed in almost all areas of the hospital but is rarely recorded or analyzed. This is primarily due to its susceptibility to motion artifacts and the complexity involved in accurately processing it. As such, advanced signal processing techniques are essential to obtain clinically relevant features for analysis by researchers and healthcare professionals.
+In the context of glucose monitoring, the use of PPG remains in the early stages. The relationship between blood glucose and PPG signals captured from pulse oximeters is still not fully established. However, with the advent of machine learning and artificial intelligence, promising results have been observed in recent studies [1][2][5]. For instance, a recent study achieved 97.87% accuracy in developing a diabetes screening tool using a support vector machine model [6].
+A notable recent study published in Nature Scientific Reports (2024) explored the feasibility of non-invasive blood glucose estimation using multi-wavelength PPG and machine learning techniques [27]. The study involved 40 healthy individuals undergoing an oral glucose tolerance test (OGTT), during which PPG signals were recorded using a custom sensor with multiple light wavelengths. Features derived from the PPG waveforms—such as morphological, statistical, and time-domain characteristics—were input into machine learning regression models to predict reference blood glucose levels measured by standard finger-prick tests. The models, especially non-linear ones like Random Forests and Gradient Boosting, demonstrated promising accuracy, with performance evaluated using metrics such as RMSE, MAE, and Clarke Error Grid (CEG) analysis. While the study confirmed the potential of PPG for tracking glucose variations, it also acknowledged limitations such as small sample size, participant homogeneity, and the need for further validation in real-world settings. [27][d]
+
+
+This growing body of research highlights the potential of PPG-based glucose monitoring—particularly when combined with sophisticated processing and modeling—but also underscores the technical and physiological challenges that must be addressed before clinical adoption.
+2.1.2 PPG Blood glucose estimation techniques
+Photoplethysmography (PPG) has gained significant attention as a non-invasive method for estimating blood glucose levels. By analyzing the optical absorption of near-infrared (NIR) light in blood vessels, PPG-based systems can capture hemodynamic changes that correlate with glucose concentration. However, due to the complexity of physiological variations and external factors affecting PPG signals, advanced computational techniques are required to extract meaningful data and improve estimation accuracy.
+        2.1.2a AI and Machine Learning
+Artificial intelligence and machine learning have become essential tools in the advancement of non-invasive blood glucose estimation using PPG signals. These techniques improve the accuracy and reliability of glucose predictions by leveraging feature extraction, machine learning algorithms, and feature selection methods. The application of AI in this field typically follows a structured approach: signal acquisition, feature extraction, model selection, and performance validation [2].
+One of the key components in AI-driven glucose estimation is feature extraction, where relevant statistical and physiological attributes are derived from PPG signals. These features include mean, variance, spectral entropy, pulse transit time, and autoregressive coefficients, which capture variations in blood volume correlated with glucose levels. Machine learning models then analyze these extracted features to develop predictive models that estimate blood glucose concentrations.
+Several machine learning algorithms have been explored for this purpose, including Support Vector Regression (SVR), Neural Networks, Random Forest Regression, and Ensemble Boosted Trees. Each algorithm has its strengths, with SVR and ensemble models offering a balance between computational efficiency and predictive accuracy. Deep Neural Networks (DNNs) have also been investigated, but their high computational requirements and need for large datasets pose challenges for real-time applications [2][7].
+One approach employed PPG signal acquisition using a 940 nm NIR LED sensor, followed by structured feature extraction and selection. To optimize model performance, the Wrapper Method was utilized, identifying six key features that significantly improved glucose prediction accuracy. Among the tested machine learning models, SVR with a Fine Gaussian kernel achieved the highest accuracy, with R2=0.937R^2 = 0.937R2=0.937. The model was further validated using the Clarke Error Grid (CEG), where over 95% of predictions fell within clinically acceptable regions [2].
+Feature selection techniques, such as the Wrapper Method, have been instrumental in improving glucose prediction. By identifying optimal feature sets, researchers have refined machine learning models to balance computational efficiency and accuracy. For example, SVR with a Fine Gaussian kernel was found to outperform other models, such as ensemble boosted trees and deep learning-based architectures, by achieving high accuracy with lower computational costs [2].
+In addition to feature selection, integrating multimodal biometric features has shown promise for enhancing glucose estimation. Optical, thermal, and physiological parameters, including heart rate, skin temperature, electrodermal activity, and blood pressure, have been combined in machine learning pipelines to predict glucose concentrations. These pipelines systematically compare multiple regression models to identify the most effective techniques for non-invasive glucose prediction [7].
+Recent studies, such as the one by Zeynali et al. [27], further support the potential of AI in this field. Their work demonstrated the successful application of multi-wavelength PPG signals in conjunction with various deep learning models for blood glucose estimation. By implementing their approach using TinyML, they also highlighted the feasibility of real-time, low-power solutions for wearable applications. Their results showed strong predictive performance and high clinical relevance, with the majority of predictions falling within acceptable zones of the Clarke Error Grid.
+
+
+These methods highlight the effectiveness of AI and machine learning in non-invasive glucose monitoring. By integrating advanced feature selection, optimized machine learning models, and robust validation techniques, researchers can enhance the accuracy and clinical applicability of PPG-based glucose estimation systems. Future research in this domain can further improve performance by incorporating real-time adaptive algorithms, multi-sensor fusion, and deep learning architectures optimized for wearable applications.[e]
+        2.1.2b Pre-processing techniques
+Pre-processing techniques play a crucial role in improving the accuracy of PPG-based blood glucose estimation by enhancing signal quality and reducing artifacts. These techniques typically involve noise filtering, baseline drift correction, signal segmentation, and motion artifact reduction to ensure reliable data for machine learning models. One common method is the use of moving average filters, which help smoothen the raw PPG signal by eliminating high-frequency noise that can interfere with feature extraction. Additionally, baseline drift correction is applied to compensate for slow variations caused by physiological changes or sensor inconsistencies, ensuring a more stable signal.
+Signal segmentation is another critical step, where the PPG waveform is divided into fixed-length, non-overlapping frames to facilitate structured feature extraction. Features such as spectral entropy, peak-to-peak interval, Kaiser Teager Energy (KTE), and autoregressive coefficients are derived to capture glucose-related variations in blood volume. To mitigate the impact of motion artifacts, outlier removal methods and statistical analysis, including variance, skewness, and interquartile range, are employed to exclude unreliable signals. These steps collectively enhance the reliability of glucose predictions.
+Some researchers have demonstrated the effectiveness of integrating multiple pre-processing techniques into their glucose monitoring systems. For example, moving average filtering, baseline drift correction, and segmentation were combined with outlier removal to provide cleaner, more reliable data for machine learning models [2]. Other approaches, such as the piecewise linear (PWL) method, have been employed to remove baseline drifts and ensure a stable feature set. Autoregressive modeling and power spectral density analysis were also applied to refine extracted features, improving the robustness of machine learning predictions [2].
+The application of advanced methods such as time alignment and outlier detection has further improved multimodal glucose estimation. Down-sampling and time synchronization methods match sensor readings with glucose values, ensuring consistency during feature extraction. Statistical outlier removal, based on domain-specific thresholds, is used to discard unreliable data points before training machine learning models, enhancing accuracy [7].
+Additional innovations in pre-processing include baseline noise reduction through physical interventions, such as integrating a black housing for sensors to minimize ambient light interference. Voltage signal acquisition and smoothing were implemented using a 10-bit ADC in an Arduino microcontroller to digitize NIR sensor readings. Signal calibration against a commercial OneTouch Select Plus glucose meter ensured accuracy, while statistical averaging across multiple individuals minimized fluctuations, resulting in a more stable regression model [8].
+Filtering techniques, such as the Savitzky-Golay (SG) filter, have proven effective in denoising PPG signals while preserving critical features like systolic and diastolic peaks. With optimized parameters (frame length of 61 and polynomial order of 4), the SG filter demonstrated strong performance, achieving a Signal-to-Noise Ratio (SNR) of 39.8672 dB and a Percent Root Mean Square Difference (PRD) of 1.0154 at the fingertip site. Despite challenges in handling severe motion artifacts, the SG filter remains promising for wearable health monitoring devices, provided appropriate filter parameters are selected to address site-specific noise characteristics [9].
+Normalization is another critical pre-processing technique to ensure comparability across individuals and measurement sites. Differences in skin tone, tissue thickness, and blood perfusion introduce variability in PPG signals. To address this, Min-Max Normalization is widely used, as it scales data to a fixed range (e.g., [0, 1]). This method preserves the relationships among original data points while ensuring consistency across different datasets. The formula for Min-Max Normalization is:
+  
+
+where    represents the raw data,    and    are the minimum and maximum values in the dataset, and    and    are the desired range bounds. This technique plays a vital role in standardizing PPG signals, ensuring reliable feature extraction and model performance in blood glucose estimation.
+Cross-correlation-based synchronization is another important technique for pre-processing PPG signals collected from multiple body sites. Allen (2019) utilized cross-correlation to measure and align PPG signals recorded from the ears, thumbs, and toes relative to ECG R-R intervals. This approach quantified the phase lags between pulse arrival time (PATf) and pulse amplitude (AMP) at different body sites, identifying significant segmental differences and bilateral similarities. By determining correlation lags, PPG signals from these sites were temporally synchronized, ensuring consistency in feature extraction. The study found that PATf lags were shortest at the toes and longest at the ears, while AMP lags were significantly greater than PATf across all sites. This synchronization technique is critical for correcting timing differences caused by physiological variability or sensor placement, particularly in multimodal glucose estimation systems. The insights from this study provide a foundation for developing accurate and synchronized PPG-based glucose monitoring systems.
+A generalized time synchronization algorithm, based on cross-correlation, has been proposed for aligning signals of the same type collected across different devices. Although originally designed for use with ECG signals, the approach is adaptable for multi-site PPG synchronization. The algorithm incorporates preprocessing steps such as bandpass filtering, Min-Max normalization, and a Signal Quality Index (SQI) to enhance alignment accuracy. It demonstrates resilience to noise and variations in sampling rates, achieving a mean synchronization delay as low as 0.13 seconds under optimal conditions. While the algorithm does not directly address multi-site PPG signal synchronization, its framework offers valuable insights into synchronizing physiological signals with minimal computational overhead. This highlights its potential applicability in wearable health monitoring systems and multimodal glucose estimation applications [10].
+These methods highlight the importance of pre-processing in optimizing the accuracy and robustness of PPG-based glucose estimation.
+        2.1.2c Regression Models
+Regression models play a key role in the machine learning framework for non-invasive glucose estimation, providing a means to map extracted PPG features to corresponding blood glucose levels. Several regression techniques have been explored in recent studies, including Support Vector Regression (SVR), Multiple Linear Regression (MLR), Random Forest Regression, and Ensemble Boosted Trees.
+Support Vector Regression (SVR) with a Fine Gaussian kernel has emerged as one of the most accurate models for glucose estimation. In one study, SVR achieved an R2R^2R2 value of 0.937, outperforming other regression techniques such as linear regression and ensemble boosted trees. This balance between accuracy and computational efficiency makes SVR particularly suitable for non-invasive glucose monitoring systems [2]. Similarly, another study compared ensemble boosted trees, neural network regression models, and SVR, concluding that SVR and ensemble models were the most effective for glucose prediction [2].
+Other research has explored a broader range of regression models, including Gaussian Process Regression (GPR), K-Nearest Neighbors (KNN), Decision Tree Regression (DTR), and Multi-layer Perceptron Regression (MLP). Among these, Bagged Trees Regression and Gaussian Process Regression demonstrated superior predictive accuracy for glucose estimation, highlighting the potential of these techniques for further development [7].
+Linear regression has been utilized as a simple and cost-effective approach for non-invasive glucose estimation. One system employed a near-infrared (NIR) optical sensor to measure glucose levels, with signal processing handled by an Arduino microcontroller. The approach used a predefined linear equation to correlate ADC voltage readings with glucose concentrations, eliminating the need for AI or machine learning. The model was implemented in the microcontroller’s firmware to provide real-time glucose estimation, achieving an error rate of 2.86% when compared to commercial invasive glucose meters. This method demonstrates a low-cost, interpretable solution for non-invasive monitoring [8].
+While deep learning architectures have shown potential in glucose estimation, they pose challenges such as high computational requirements, the need for large labeled datasets, and increased model complexity, which may lead to difficulties in real-time implementation. Due to these constraints, this study opts for simple linear regression as it offers a computationally efficient, interpretable, and cost-effective solution for non-invasive glucose monitoring. Future research may focus on integrating more advanced models while ensuring feasibility for real-time applications.
+2.1.2d Feature Extraction
+Feature extraction is a critical step in photoplethysmography (PPG) signal analysis, enabling the derivation of physiological parameters that are key to non-invasive glucose estimation. Although glucose estimation is a relatively recent application of PPG, foundational techniques developed in other medical fields, such as cardiovascular monitoring and vascular diagnostics, provide a strong methodological basis. Studies from these fields illustrate how features like pulse amplitude, peak-to-peak interval, and statistical measures can be effectively utilized, while their adaptation for glucose estimation continues to evolve.
+Pulse amplitude (Pamp) is a widely studied feature in PPG analysis, traditionally used to assess blood flow and vascular health. A study analyzed normalized amplitude variability in Peripheral Arterial Disease (PAD) patients compared to healthy controls. The amplitude variability, calculated using standard deviation (SD) and interquartile range (IQR), was significantly lower in PAD patients [11]. This relationship is modeled mathematically as:
+  
+
+This finding, while primarily focused on vascular conditions, illustrates the diagnostic potential of Pamp for identifying physiological changes, which can be extended to tracking glucose-induced variations in blood perfusion​.
+Similarly, the peak-to-peak interval (PPI) is a core feature in cardiac rhythm analysis and has been adapted for glucose estimation. PPI, as a time-domain feature, reduces computational complexity while maintaining high diagnostic utility. In one study, PPI-based models for atrial fibrillation detection achieved a sensitivity rate of 91.7% using neural network architectures, such as Long Short-Term Memory (LSTM) networks [24]. The relationship between PPI and diagnostic outcomes is mathematically modeled as:  
+where X represents the sequence of PPIs, W the weight matrix, b the bias term, and σ the activation function. These methods, originally developed for cardiac diagnostics, have inspired their use in glucose estimation by analyzing glucose-related changes in pulse waveform timing​
+Statistical measures such as mean and standard deviation (SD) are instrumental in PPG-based feature extraction. A study utilized these metrics in combination with advanced machine learning algorithms to predict blood pressure from PPG signals [12]. The mean absolute deviation (MAD), a measure of signal dispersion, was calculated as:  
+
+
+where  represents individual signal amplitudes,  the mean amplitude, and N the total number of samples. The study’s success in blood pressure estimation illustrates how statistical metrics derived from PPG signals can enhance predictive accuracy, a principle directly applicable to glucose monitoring​.
+The use of multi-site signal fusion algorithms has also been explored in PPG for improved accuracy in medical diagnostics, providing a framework adaptable for glucose estimation. A study investigated multi-site PPG measurements from the fingers and toes to detect PAD [11]. By applying magnitude-squared coherence (MSC) in the frequency domain, they quantified the synchronization between bilateral signals:  
+where  is the cross-spectrum, and are the power spectra of individual signals. While their focus was on vascular health, the principles of multi-site fusion can be applied to glucose estimation by leveraging PPG data from multiple body sites to account for variability and improve prediction robustness. 
+In the context of weighted averaging fusion, a study proposed a novel approach for combining features from electrocardiogram (ECG) and PPG signals using the Choquet integral for multimodal fusion [13]. The weight-based Choquet integral was defined as:  
+where h represents individual model outputs, g the fuzzy measure, and π(j) the rank order of predictions. This method achieved a mean absolute relative difference (MARD) of 13.42% and a root-mean-square error (RMSE) of 1.49 mmol/L for blood glucose estimation, highlighting its effectiveness for combining multimodal physiological features​.
+For decision-level fusion, a study utilized a weighted ensemble of machine learning models, including Random Forest, XGBoost, and CatBoost, to improve the accuracy of HbA1c estimation from PPG signals [14]. By assigning higher weights to models with lower mean squared error (MSE), the ensemble mitigated overfitting and enhanced prediction reliability. The ensemble output was expressed as:  
+where ​ is the weight assigned to the i-th model and ​ its prediction. This approach improved R-squared values to 0.85, demonstrating its potential for glucose monitoring applications.
+
+Here’s how you can smoothly integrate the list of features and cite it as [28] in your existing section 2.1.2d Feature Extraction, ensuring continuity with the detailed review of prior works:
+________________
+
+
+2.1.2d Feature Extraction
+Feature extraction is a critical step in photoplethysmography (PPG) signal analysis, enabling the derivation of physiological parameters that are key to non-invasive glucose estimation. Although glucose estimation is a relatively recent application of PPG, foundational techniques developed in other medical fields, such as cardiovascular monitoring and vascular diagnostics, provide a strong methodological basis. Studies from these fields illustrate how features like pulse amplitude, peak-to-peak interval, and statistical measures can be effectively utilized, while their adaptation for glucose estimation continues to evolve.
+Recent work by Zeynali et al. [27], a range of features were extracted from the processed PPG signals for each wavelength used which included:
+* Morphological Features: Systolic peak amplitude, diastolic peak amplitude, pulse width at different heights, area under the pulse curve, and slope information (upstroke, downstroke).
+
+* Time-Domain Features: Heart rate (derived from peak-to-peak intervals) and heart rate variability (HRV) parameters if longer segments were analyzed.
+
+* Statistical Features: Mean, standard deviation, skewness, and kurtosis of the signal within segments.
+
+* (Potentially) Frequency-Domain Features: Power spectral density in different frequency bands, though less commonly used for direct glucose correlation.
+
+* (Potentially) Demographic Features: Age, gender, and possibly BMI (calculated from height/weight if collected), may have been included as additional inputs.[f]
+These studies demonstrate the versatility of PPG feature extraction across medical fields and its growing application in non-invasive glucose estimation. The methodologies developed for cardiovascular and vascular diagnostics, such as Pamp variability, PPI analysis, and multi-site fusion, form a strong foundation for adapting PPG to the unique challenges of glucose monitoring. Further research should explore the direct correlation between these features and glucose-induced changes in PPG signals to refine their application in diabetes management.
+
+
+2.2 Single-Site Techniques
+Single-site techniques for non-invasive glucose estimation rely on obtaining data from a specific body part, typically using optical sensors. The MAX30102 sensor is widely employed in these systems, utilizing photoplethysmography (PPG) to measure blood volume changes through light absorption. Integrated with red and infrared LEDs, the sensor detects glucose-related variations in blood flow when positioned on a single site, such as the fingertip. Studies have demonstrated its ability to achieve measurement accuracies ranging from 68.7% to 96.7%, highlighting its reliability for continuous, non-invasive glucose monitoring [16].
+        Advancements in single-site systems often involve integrating machine learning algorithms to enhance prediction accuracy. For instance, combining the MAX30102 with models such as Support Vector Machines (SVM) and k-Nearest Neighbors (KNN) can significantly improve glucose estimation performance. In one system, PPG signals from a single site were processed using IoT devices like the Raspberry Pi to deliver real-time glucose readings, achieving a clinical accuracy of 81.7%, demonstrating the feasibility of wearable health technologies for diabetes management [17].
+        In-ear PPG-based systems have also been explored for continuous glucose monitoring, using sensors such as the MAX30101. While the MAX30101 includes an additional green LED (537 nm), the core methodology—infrared-based PPG signal processing—remains similar to that of the MAX30102. These systems, combined with machine learning regression models, achieved 82% accuracy in clinically acceptable Clarke Error Grid (CEG) regions A and B. Such findings underscore the potential of signal preprocessing, feature extraction, and ensemble regression models for refining non-invasive glucose monitoring systems [17].
+        Single-site PPG systems have further been enhanced by leveraging advanced feature extraction and machine learning techniques. For example, studies have utilized spectral entropy, peak-to-peak intervals, and pulse transit time as key features, processed through models like neural networks and regression techniques. Single Pulse Analysis (SPA) has been shown to improve estimation performance, achieving high coefficients of determination (R²) and clinical acceptability in glucose prediction, as validated through Clarke Error Grid Analysis (CEGA) [18].
+        IoT-enabled single-site systems, such as QU-GM, have demonstrated the integration of PPG signals, blood pressure measurements, and demographic data for improved glucose prediction. Using algorithms like Bagged Ensemble Trees (BET) and Gaussian Process Regression (GPR), these systems achieved a correlation coefficient of 0.90, with all predictions falling within clinically acceptable CEG regions A and B. Additional methods, such as KNN, were employed for classifying diabetic severity levels, achieving 98.12% accuracy. These results highlight the effectiveness of single-site PPG-based systems for real-time, continuous glucose monitoring [19].
+        Multi-sensor fusion approaches have also been explored within single-site systems. By incorporating sensors for PPG, blood flow, temperature, humidity, and SpO₂, glucose estimation accuracy has been enhanced through advanced data processing techniques like principal component analysis (PCA) and discriminant analysis. In clinical trials involving 254 participants with type II diabetes, a system employing multiple linear regression models and a weighted mean method achieved accuracies of 58.33% and 39.43% in Parkes Error Grid Zones A and B, respectively, with a correlation coefficient of 0.69 and a root mean square error (RMSE) of 2.67 mmol/L [20].
+        Near-infrared (NIR) photoplethysmography (PPG) has been widely applied in non-invasive blood glucose monitoring, offering a painless and cost-effective alternative to traditional invasive methods. Using the MAX30102 biosensor, a single-site NIR-based glucose monitoring system was developed to capture PPG signals at 880 nm and process them using linear regression with Clarke Error Grid Analysis for calibration [21]. The system, integrated with an ESP32 microcontroller, displayed real-time glucose levels on an OLED screen and uploaded the data to a cloud server for remote monitoring via the Internet of Things (IoT). Validation against commercial invasive glucometers demonstrated a root mean square error (RMSE) of 13.8 mg/dL and a mean absolute relative difference (MARD) of 12%, indicating reliable accuracy. By leveraging PPG features and machine learning models, this approach further enhances single-site glucose estimation, supporting the development of wearable, non-invasive monitoring systems for improved diabetes management.
+        A review examined single-site PPG systems, focusing on NIR-based glucose prediction models and machine learning techniques. Their analysis highlighted the importance of feature extraction from PPG waveforms, including spectral entropy, peak-to-peak intervals, and pulse transit time, which are then processed using machine learning algorithms such as Support Vector Regression (SVR) and Ensemble Boosted Trees for accurate glucose estimation. The study compared multiple NIR-based systems and found that optimized machine learning models achieved high correlation coefficients (R² > 0.9) in non-invasive glucose prediction. Additionally, Clarke Error Grid Analysis (CEGA) results showed that over 95% of predicted glucose values fell within clinically acceptable Zones A and B, validating the accuracy and feasibility of single-site NIR-PPG systems. These findings underscore the potential of wearable, non-invasive glucose monitoring devices, particularly those integrating PPG signals with machine learning for real-time tracking and improved diabetes management [1].
+
+
+Recent work by Zeynali et al. [27] further expanded on single-site PPG applications by introducing a wearable glucose monitoring system that combines deep learning models with multi-wavelength PPG data. Their approach leveraged TinyML for real-time predictions, enabling energy-efficient deployment on embedded systems while maintaining high clinical accuracy across Clarke Error Grid zones.
+
+
+Additionally, the availability of a new public dataset has strengthened research in single-site techniques. The dataset by Kermani and Esmaeili [28] offers 67 raw PPG signal samples collected from the fingertip using a 550-nm green LED pulse sensor, alongside demographic and glucose concentration labels. With a sampling rate of 2175 Hz and detailed metadata—including age, gender, height, weight, and corresponding invasive glucose readings—the dataset provides a valuable resource for training and benchmarking non-invasive glucose prediction models. Its high-resolution and structured format enable researchers to apply a wide range of feature extraction and machine learning techniques, fostering reproducible and data-driven advancements in single-site glucose monitoring. 
+2.2 Multi-Site Techniques
+Multi-sensor systems for non-invasive glucose monitoring have gained significant attention due to their potential to enhance measurement accuracy and reliability compared to single-site techniques. In contrast to single-site methods, which rely on data from a singular physiological signal (e.g., photoplethysmography or PPG), multi-sensor systems integrate information from multiple physiological markers. This integration allows for a more comprehensive analysis, compensating for the limitations of single-sensor measurements and improving overall glucose estimation accuracy.
+One system proposed a wearable, non-invasive glucose monitoring framework that combines PPG, galvanic skin response (GSR), and temperature sensors. The complementary nature of these sensors enhances the robustness of glucose level predictions by capturing diverse physiological responses. For instance, PPG measures blood volume changes through light absorption, GSR captures variations in skin conductivity influenced by sweat gland activity, and temperature sensors monitor skin and ambient temperature fluctuations—factors known to correlate with glucose dynamics [22].
+The system employs an Arduino Nano for data acquisition and transmits raw signals from the PPG, GSR, and temperature sensors to a Raspberry Pi for processing. Specifically, the PPG sensor (GY-MAX30105 pulse oximeter) utilizes red, green, and near-infrared LEDs to detect variations in blood flow. The GSR sensor measures the skin’s electrical conductance, which is affected by glucose-induced changes in sweat gland activity, while temperature sensors provide critical information on both skin and environmental temperatures. By integrating these diverse signals, the system captures a broader range of physiological markers associated with glucose variations, enhancing the reliability of its predictions [22].
+To ensure data quality, the raw signals undergo preprocessing, including noise removal through DC removal filters and median filters. This step mitigates baseline drift and motion artifacts, which are common issues in wearable monitoring devices. The cleaned data are then fed into a convolutional neural network (CNN) model designed to predict blood glucose levels. The CNN architecture consists of multiple convolutional layers for feature extraction, followed by fully connected layers for regression analysis. The model is trained using labeled data, where the sensor readings are matched with reference glucose levels obtained from traditional invasive methods.
+The study demonstrated that the CNN model could effectively learn the complex relationships between multi-sensor data and blood glucose levels, achieving a high correlation with clinical measurements. The system’s performance was validated through experiments involving multiple subjects, with data collected in both fasting and postprandial states to capture a wide range of glucose variations [22].
+The multi-sensor approach offers several advantages over single-site techniques, such as improved accuracy through the reduction of noise and artifacts specific to any single sensor, leading to more reliable glucose estimates. Combining data from multiple sensors reduces the impact of noise and artifacts specific to any single sensor, leading to more reliable glucose estimates. It also offers robustness to external factors, as multi-sensor systems can compensate for environmental and physiological variations, such as changes in temperature, hydration levels, or skin properties. Additionally, the integration of diverse physiological signals allows machine learning models to capture complex patterns associated with glucose dynamics, which single-sensor systems might miss.
+Despite its advantages, the multi-sensor approach also presents challenges. Integrating data from different sensors requires sophisticated algorithms to handle varying signal characteristics and synchronization issues. Multi-sensor devices typically consume more power, which can be a limitation for wearable applications. Moreover, incorporating multiple sensors into a compact, comfortable, and user-friendly wearable device requires careful design considerations.
+This underscores the potential of multi-sensor systems in advancing non-invasive glucose monitoring. By leveraging data from PPG, GSR, and temperature sensors, combined with machine learning techniques, their approach demonstrates significant improvements in prediction accuracy and system robustness. This multi-sensor framework provides a solid foundation for the development of next-generation wearable glucose monitoring devices, addressing the limitations of single-site techniques and paving the way for more reliable diabetes management solutions [22].
+2.3 Physiological Basis for Glucose Estimation Using PPG as Machine Learning Inputs
+Non-invasive blood glucose monitoring has gained significant research attention due to the limitations of traditional invasive methods, such as finger-prick glucometers. Among various optical techniques, photoplethysmography (PPG) has emerged as a promising modality for glucose estimation due to its ability to capture real-time vascular changes influenced by blood glucose fluctuations [1].
+PPG is an optical technique that detects blood volume changes in microvascular tissues by analyzing the light absorption and reflection properties of pulsatile blood flow [23]. Glucose fluctuations in the bloodstream affect vascular compliance, blood viscosity, endothelial function, and autonomic nervous system activity, all of which influence the shape, amplitude, and periodicity of the PPG waveform [1][23]. These physiological factors form the foundation for glucose estimation using PPG signals.
+Several PPG-derived features have been identified as valuable machine learning inputs for glucose estimation. Pulse amplitude represents the difference between peak and trough intensities of the PPG waveform and correlates with vascular compliance and blood perfusion changes, both of which are influenced by glucose levels. Peak-to-peak interval measures the time between successive PPG peaks, reflecting heart rate variability and autonomic nervous system activity, both of which are modulated by glucose metabolism. Mean PPG value captures the average intensity of the PPG signal over a given time window and is indirectly linked to capillary perfusion and tissue oxygenation, which are affected by blood glucose variations. Standard deviation of PPG quantifies the variability of the PPG signal over time, providing insight into short-term fluctuations in vascular tone and blood viscosity due to glucose dynamics [1][23].
+One approach utilized machine learning techniques to estimate blood glucose levels using PPG signals without requiring individualized calibration. This method demonstrated functional relationships between PPG waveform morphology and glucose concentration, enabling the use of models such as linear regression and random forests for glucose prediction [23].
+A review of non-invasive glucose monitoring systems highlighted PPG as one of the most promising techniques due to its ability to capture hemodynamic changes associated with blood glucose variations. The review emphasized the critical role of machine learning techniques in improving the accuracy of PPG-based glucose estimation, particularly by leveraging multi-site PPG fusion to mitigate site-specific variability [1].
+In summary, PPG-derived features serve as essential inputs for machine learning models, enabling the estimation of blood glucose levels based on vascular, neurological, and metabolic interactions. The integration of PPG signals with data-driven algorithms enhances the feasibility of non-invasive glucose monitoring, reducing dependence on invasive methods while improving real-time glucose prediction accuracy.
+
+
+2.4 Research Gaps and Opportunities
+Despite advancements in non-invasive glucose monitoring, critical research gaps remain, particularly in the comparative evaluation of single-site and multi-site glucose estimation techniques. Single-site approaches, such as fingertip-based PPG glucose estimation, are widely studied due to their simplicity but suffer from motion artifacts, sensor placement variability, and physiological differences, leading to inconsistent accuracy. In contrast, multi-site techniques have demonstrated potential in improving glucose prediction by integrating complementary signals from multiple body locations [22]. However, comprehensive comparative studies are lacking to determine which method offers the most clinically viable and cost-effective solution. Additionally, sensor fusion techniques remain an area of ongoing exploration, as there is no standardized approach to combining multi-site readings effectively. Research on multi-site signal synchronization, as mentioned in [27], could significantly increase the accuracy of glucose estimation by addressing potential misalignments between signals from different body locations. Future research should investigate fusion algorithms such as weighted averaging, decision-level fusion, and deep learning-based integration to optimize measurement accuracy and reduce signal variability.
+Another key research gap involves site selection, as studies comparing PPG signal quality across different anatomical locations, such as the wrist, earlobe, and fingertip, remain limited. Identifying the most stable and responsive site for glucose monitoring is essential, particularly for multi-site sensor integration. Furthermore, most existing studies rely on offline data processing, limiting real-time applicability. The absence of a universal calibration method for PPG-based glucose estimation further complicates cross-subject comparisons. Future research should explore adaptive calibration models, such as machine learning-based personalized calibration, to enhance accuracy and reliability in real-world applications.
+Beyond accuracy, the practicality and energy efficiency of multi-site glucose monitoring systems present another challenge. While integrating multiple sensors improves accuracy, it also increases hardware complexity, power consumption, and potential user discomfort. To ensure real-world feasibility, research should focus on optimizing energy efficiency, minimizing device size, and enhancing user comfort without compromising accuracy. Addressing these research gaps presents significant opportunities, including comparative studies of single-site and multi-site techniques, the development of standardized sensor fusion algorithms, identification of optimal anatomical sites for glucose estimation, implementation of real-time adaptive calibration methods, and the design of low-power wearable devices. By tackling these challenges, non-invasive glucose monitoring can evolve into a more accurate, reliable, and user-friendly solution, ultimately benefiting individuals with diabetes and those at risk of developing the condition.
+Chapter 3
+Methodology
+3.1 Research Design
+This study employs a quasi-experimental research design to systematically compare the accuracy of single-site versus multi-site PPG glucose estimation. A quasi-experimental approach is appropriate for this investigation as it allows for structured data collection and analysis while maintaining flexibility in a controlled environment. Given that the primary objective is to determine whether multi-site PPG signal fusion improves glucose estimation accuracy, a comparative study is the most suitable methodological framework.
+The central premise of this study is that PPG signals acquired from different anatomical sites (e.g., fingertip, wrist, and earlobe) may exhibit variability in signal quality, motion artifacts, and physiological responsiveness. By comparing glucose estimation performance between single-site and multi-site fusion-based approaches, the study aims to assess the viability and potential advantages of integrating multiple PPG signals for improved non-invasive glucose monitoring.
+The selection of a quasi-experimental research design is justified by several considerations:
+Comparative Nature of the Study
+        This study focuses on comparing existing glucose estimation techniques under different conditions of signal acquisition, rather than developing novel machine learning algorithms. The quasi-experimental approach allows for systematic evaluation of the differences between single-site and multi-site PPG glucose estimation, eliminating the need for a full-scale clinical trial.
+
+
+Controlled Data Collection
+        Data collection is conducted in a controlled environment, where PPG signals are acquired from predefined anatomical sites under consistent conditions. Factors such as lighting, motion, and temperature are kept uniform to reduce external variability, ensuring that observed differences in glucose estimation accuracy arise primarily from signal acquisition and fusion techniques rather than confounding factors.[g]
+Focus on Signal Processing and Fusion
+        The study emphasizes signal preprocessing techniques such as noise reduction, signal smoothing, and normalization to optimize PPG signal quality. Fusion algorithms, including weighted averaging and decision-level fusion, are implemented to assess their contribution to improved glucose estimation accuracy. This research design enables a comprehensive evaluation of the effectiveness of multi-site signal integration.
+Baseline Comparison and Validation
+        To ensure clinical relevance, glucose estimates obtained through non-invasive methods are validated against invasive glucose measurements as the baseline. This baseline comparison ensures alignment with clinical standards and provides insights into the real-world applicability of the proposed approach.
+
+
+________________
+Conceptual Framework
+The study is guided by a structured experimental workflow, as illustrated in Figure 3.1. This conceptual framework outlines the methodological process from photoplethysmography (PPG) signal acquisition to glucose estimation and performance evaluation. Both single-site and multi-site PPG approaches are represented, with an emphasis on the additional step of signal synchronization and fusion in the multi-site method.  
+
+
+Figure 3.1: Conceptual Framework for Single-Site vs. Multi-Site PPG Glucose Estimation
+The primary independent variable in this study is the PPG measurement approach. Two methods are compared: single-site acquisition, where PPG signals are collected from a single anatomical location, and multi-site fusion, which integrates signals from multiple anatomical sites. The dependent variable is glucose estimation accuracy, which is assessed using two key metrics: the mean absolute relative difference (mARD) and baseline validation. The mARD is employed to quantify the relative error in non-invasive glucose predictions, while baseline validation involves comparing these predictions to invasive reference glucose readings to establish clinical relevance.
+Several factors are controlled to minimize external variability and ensure reliable outcomes. Environmental conditions, such as temperature, lighting, and ambient noise, are maintained consistently across all data collection sessions. Sensor placement is standardized to ensure consistency in signal acquisition from predefined anatomical sites. Physiological factors, including variations in skin tone, blood perfusion, and potential motion artifacts, are also carefully monitored and accounted for during analysis.
+________________
+3.2 Research Workflow[h][i]
+This section details the full research pipeline from initial dataset creation through feature engineering, model training, and culminating in a thorough evaluation of glucose estimation performance. This provides the structure for processing the data and assessing efficacy of single-site versus multi-site PPG approaches for non-invasive glucose estimation.
+   1. Dataset Creation and Preparation
+The dataset compiled from Photoplethysmography (PPG) signals and corresponding reference glucose measurements.
+   * PPG Signal Collection: Raw PPG signals are acquired from designated anatomical sites (fingertip, wrist, and earlobe) for both single-site and multi-site configurations)
+   * Base
+   2. Feature Engineering
+   3. Model Training
+   4. Evaluation
+
+
+
+
+
+
+
+
+________________
+
+
+3.3 Research Environment
+The study will be conducted at Cebu Technological University (CTU) – Main Campus, with data collection and testing focused at the CTU Medical Clinic. This controlled environment provides access to participants with diverse physiological characteristics, which is essential for evaluating single-site and multi-site photoplethysmography (PPG) glucose estimation techniques. The medical clinic enables real-time PPG data collection under standardized conditions, minimizing external variables such as ambient noise, inconsistent lighting, and motion artifacts that could affect signal quality. This setting ensures the reliability of the data and supports the comparative analysis of PPG signals from different anatomical sites.
+By leveraging the university and clinic setting, the study supports the development and validation of non-invasive glucose monitoring technologies. This environment facilitates the testing of smoothing and fusion algorithms, ensuring preliminary validation before advancing to broader clinical applications.  
+Figure 3.3: Location Map of CTU Main Campus - Medical Clinic
+3.4 Research Respondents
+The respondents for this study will be non-diabetic student volunteers enrolled at Cebu Technological University (CTU) - Main Campus. A target sample size of 30 individuals will be recruited. Participants will be identified through collaboration with the CTU Main Campus Medical Clinic, which can assist in initial screening. Recruitment will also utilize information dissemination methods such as posters or online announcements and surveys within the university community to reach potential volunteers.
+This study will employ non-random purposive sampling to select participants most relevant to the research objectives. The rationale for this approach is to focus recruitment on individuals who are suitable for high-quality PPG signal acquisition. This allows for a focused comparison of single-site versus multi-site estimation methods within a baseline, non-diabetic population, aligning with the study's specific goals.
+Selection criteria are established to ensure participant suitability and data quality. Participants must be within the age range of 18-25 years and confirm a self-reported non-diabetic status. They must express willingness to provide full informed consent and participate in all study procedures, which include both non-invasive PPG measurements and invasive capillary blood glucose measurements via finger-prick, as detailed in the study protocol. Additionally, participants should not have skin conditions or excessive hair at the planned measurement sites (fingertip, wrist, earlobe) that could significantly interfere with PPG readings. The ability to understand and follow instructions, particularly regarding remaining seated and minimizing movement during data collection, is also required.
+This focused sampling strategy aims to maximize the quality and relevance of the collected data for evaluating the proposed glucose estimation techniques within the defined scope. Full informed consent, comprehensively detailing all study procedures, potential risks, benefits, and participant rights, will be obtained in writing from each individual prior to their enrollment and participation in the study.
+3.5 Experimental Setup
+This section describes the experimental setup, including hardware components, data collection procedures, preprocessing techniques, and machine learning methods used to evaluate single-site and multi-site PPG glucose estimation. The study employs advanced signal acquisition and processing techniques to improve glucose estimation accuracy, focusing on multi-site fusion as a key enhancement.
+  
+
+Figure 3.4: Multi-Sensor Interfacing Architecture for PPG Data Acquisition
+This figure illustrates the experimental interfacing setup designed for multi-sensor photoplethysmography (PPG) data acquisition. The system architecture begins with a computer, which provides power and communication to the ESP32 microcontroller via a USB connection. The ESP32 serves as the primary data acquisition and processing unit, interfacing with a TCA9548A I2C multiplexer to facilitate communication with multiple MAX30102 PPG sensors. The TCA9548A addresses I2C bus limitations by resolving address conflicts, enabling the independent operation of each sensor. This configuration ensures efficient data collection from multiple sensing points, optimizing the system's capacity for multi-site physiological monitoring and analysis.
+3.5.1 Hardware Components
+The experimental setup employs a range of hardware components specifically selected to facilitate the collection and processing of photoplethysmography (PPG) signals from multiple anatomical sites. To enable simultaneous multi-site PPG acquisition, a TCA9548A I²C multiplexer is integrated, allowing multiple MAX30102 sensors to be interfaced with a single ESP32 microcontroller. The key components include the following: 
+PPG Sensor: MAX30105
+
+
+Microcontroller: ESP32
+The ESP32 microcontroller serves as the central unit for data acquisition, preprocessing, and transmission. Its multi-sensor capability is enabled through the TCA9548A I²C multiplexer, which dynamically selects and communicates with multiple MAX30102 modules. The ESP32 transmits raw PPG signals directly to a computer via a stable serial connection, ensuring uninterrupted power and reliable data transfer for further analysis.
+Data Logging Interface:
+        The TCA9548A I²C multiplexer is incorporated to enable the ESP32 to interface with multiple MAX30102 modules, as all MAX30102 sensors share the same I²C address. The multiplexer sequentially activates each sensor, preventing address conflicts while allowing synchronized multi-site data collection. To ensure stable power delivery for all components, the ESP32 is connected to a USB 3.0 port, which provides sufficient current for the ESP32, multiplexer, and four MAX30102 sensors. This setup guarantees precise signal acquisition from different anatomical sites without interference between sensors.
+3.5.2 Signal Collection Sites & Experimental Conditions[j]
+This study evaluates single-site versus multi-site photoplethysmography (PPG) glucose estimation by selecting measurement sites based on previous research, physiological considerations, and practical usability in health monitoring devices. The primary objective is to determine whether multi-site PPG improves glucose estimation accuracy by addressing site-specific limitations that affect signal quality and reliability.
+Measurement Site
+	Key Characteristics
+	Rationale for Selection
+	Fingertip
+	Commonly used in pulse oximeters and clinical PPG-based monitoring; high blood perfusion ensures strong signal quality but is prone to motion artifacts.
+	Serves as the control site for single-site conditions, providing a baseline for comparison.
+	Wrist
+	Widely adopted in wearable devices such as smartwatches; practical for continuous monitoring but affected by lower perfusion, skin tone, and movement variability.
+	Represents real-world feasibility for wearable health monitoring systems.
+	Earlobe
+	Reduced sensitivity to motion artifacts and moderate blood perfusion; commonly used in clinical-grade SpO₂ monitoring but less utilized for PPG glucose estimation.
+	Provides stable signal quality under low perfusion conditions, adding value to multi-site data collection.
+	Table 3.1: Data Collection Sites and Their Characteristics
+These three measurement sites: fingertip, wrist, and earlobe, were chosen to strike a balance between signal strength, motion stability, and real-world usability. Their selection enables a comprehensive evaluation of single-site and multi-site glucose estimation, offering valuable insights into the advantages of multi-site integration in addressing the inherent challenges of site-specific limitations.
+3.5.3 Experimental Conditions
+To ensure the accuracy and consistency of data collection, controlled and repeatable conditions are essential. This study establishes specific protocols designed to minimize variability and maintain uniformity across trials. The following conditions will be maintained:
+Condition
+	Details
+	Participant State
+	Participants will be asked to rest in a seated position for at least 5 minutes before and during data collection to achieve a stable physiological state. They will be instructed to minimize movement, especially of the hands and head, during the measurement period to reduce the risk of motion artifacts.
+	Controlled Environment
+	Data collection will occur indoors at the CTU Medical Clinic under consistent ambient lighting and temperature conditions. This controlled environment minimizes external factors like lighting and temperature fluctuations that could affect sensor readings or participant physiology.
+	Procedure
+	The data collection will involve 30 participants. For each participant, the non-invasive measurement will be taken first. PPG sensors will be attached securely to the fingertip, wrist, and earlobe. Simultaneous PPG data recording from all attached sites will commence and continue for a predefined duration (e.g., 2-5 minutes) to capture a stable signal representing that time point. Immediately following the completion of the PPG recording, a capillary blood glucose measurement will be taken using the specified commercial glucometer according to manufacturer instructions.
+	Table 3.2: Experimental Conditions for Data Collection
+Adhering to these standardized conditions is critical to maintaining the reliability and reproducibility of the study. The seated and resting position reduces the risk of motion artifacts, while the controlled environment minimizes external factors like lighting and temperature fluctuations. Simultaneous multi-site data collection allows for a fair comparison between single-site and multi-site PPG glucose estimation methods under consistent conditions.
+________________
+
+
+3.6 Preprocessing, Feature Extraction, and Multi-Site Signal Fusion for PPG-Based Glucose Estimation
+This section describes the methods employed to preprocess PPG signals, extract relevant features, and integrate signals from multiple anatomical sites. These processes are essential to improve the accuracy of glucose estimation, with the techniques chosen based on their ability to reduce noise, standardize signal characteristics, and enhance the predictive performance of multi-site fusion.
+3.6.1. Preprocessing Techniques
+Preprocessing is essential to enhance the quality of PPG signals before feature extraction and glucose estimation. The following techniques are applied:
+Savitzky-Golay Filtering (Polynomial Smoothing)
+Savitzky-Golay filtering is a polynomial smoothing technique that preserves essential waveform characteristics while reducing minor motion artifacts. Unlike simple moving averages, this method applies a polynomial fit across a sliding window, ensuring that peaks and valleys in the PPG waveform remain intact, which is crucial for accurate feature extraction.
+Mathematical Representation:
+  
+
+        In this equation,    represents the smoothed signal at sample iii, while    refers to the neighboring PPG values within the window of size   . The coefficients    are the polynomial coefficients determined through the fitting process. The parameter    defines the window size, which determines the range of data points used for the polynomial smoothing.
+This representation ensures that critical features, such as peaks and valleys in the PPG waveform, are preserved while reducing noise. The application of this technique is crucial for maintaining the morphological integrity of the signal, which is essential for accurate glucose estimation.
+Baseline Drift Correction (Adaptive Moving Average)
+Baseline drift is a low-frequency variation in PPG signals, often caused by respiration, sensor movement, or skin contact pressure changes. To eliminate these slow oscillations, an adaptive moving average filter is used, which subtracts the local mean from the original signal.
+Mathematical Representation:
+   
+In this equation,    represents the raw PPG signal at time t, while    is the drift-corrected signal. The parameter    denotes the window length, typically ranging from 5 to 10 seconds, over which the local mean is calculated and subtracted from the raw signal. This process removes slow signal fluctuations caused by respiration, sensor movement, or changes in skin contact pressure. By eliminating these oscillations, the method preserves glucose-related vascular changes and reduces biases introduced by sensor positioning and physiological variability.
+Standardization & Normalization
+PPG signals exhibit variability across individuals and sensor placements due to differences in skin tone, tissue thickness, and blood perfusion. To ensure comparability across different measurement sites, the signals are standardized using Min-Max Normalization.
+Min-Max Normalization:
+  
+
+In this equation,   ​ and   ​ represent the lowest and highest values within a specific time window, respectively. This normalization technique ensures consistent amplitude across different PPG sites, facilitating fair comparisons between signals. By standardizing the amplitude, the method enhances model generalization and reduces the effects of inter-subject and intra-subject variations, improving the reliability of glucose estimation.
+Multi-Site Signal Synchronization
+In multi-site PPG analysis, timing differences may occur due to varying physiological response times or sensor delays. Cross-correlation-based synchronization is applied to align signals before fusion.
+Cross-Correlation-Based Synchronization:
+  
+
+In this equation,    and    represent the PPG signals from two different sites, while    refers to the delay that maximizes alignment between the two signals. By synchronizing signals from multiple sites, this technique reduces phase mismatches and prevents temporal distortions that could otherwise impair fusion accuracy. The synchronization ensures that signals from various anatomical locations are temporally aligned, contributing to improved glucose estimation performance.
+3.6.2 Feature Extraction
+Feature extraction transforms preprocessed PPG signals into quantifiable parameters that correlate with glucose levels. The following features are utilized in this study:
+Pulse Amplitude (Pamp)
+Pulse amplitude represents the difference between the highest peak and lowest trough in a PPG cycle, reflecting blood volume changes.
+Mathematical Representation:
+  
+
+Here,   ​ represents the highest peak in the PPG waveform, while    corresponds to the lowest trough. Changes in pulse amplitude are directly influenced by glucose fluctuations. Higher glucose levels cause vasoconstriction, which reduces the overall amplitude of the PPG signal, making this parameter critical for glucose estimation.
+Peak-to-Peak Interval (PPI)
+The peak-to-peak interval (PPI) represents the time interval between consecutive PPG peaks. This feature reflects vascular compliance and autonomic nervous system activity, both of which are influenced by glucose regulation. Changes in vascular stiffness, caused by variations in glucose levels, directly affect the timing of these intervals.
+Mathematical Representation:
+  
+
+In this equation,   ​ represents the timestamp of the nth peak in the PPG waveform. Variations in PPI provide valuable insights into vascular and metabolic changes, making it an essential feature for glucose estimation.
+Mean & Standard Deviation (SD)
+The mean intensity and variability of the PPG signal provide insight into overall signal stability and physiological consistency.
+Mathematical Representations:
+  
+​
+  
+
+In these equations,   represents the mean of the PPG signal, while   denotes the standard deviation. The variable N is the total number of data points, and  represents the individual PPG signal values. Variations in these metrics provide critical information about signal stability and glucose-induced metabolic changes.
+3.6.3 Multi-Site Signal Fusion Algorithms
+To enhance the accuracy and robustness of glucose estimation, this study employs multi-site signal fusion techniques that integrate PPG signals from multiple anatomical sites. Among these techniques, weighted averaging fusion is implemented to ensure that signals with higher reliability contribute more significantly to the final glucose estimation. This approach effectively reduces the impact of motion artifacts and sensor noise by prioritizing high-quality signals.
+Weighted Averaging Fusion
+Weighted averaging fusion dynamically assigns weights to each PPG signal based on its signal-to-noise ratio (SNR), allowing for an adaptive contribution of each signal to the final estimation. The fused signal is computed as:
+Mathematical Representation:
+  
+
+Here,   ​ represent the PPG signals obtained from the fingertip, wrist, and earlobe, respectively. The parameters    are the corresponding weights assigned to each signal based on their respective SNR values. By prioritizing signals with higher quality, this approach minimizes the influence of noise and enhances the accuracy of glucose estimation.
+Weight Calculation (SNR-based):
+The weights for each PPG signal in the weighted averaging fusion method are determined based on their signal-to-noise ratio (SNR). The mathematical representation for weight calculation is as follows:
+  
+
+where  represents the signal-to-noise ratio of the i-th PPG signal, and N is the total number of signals being fused. The SNR itself is calculated as:
+  
+
+For optical biosensors such as the MAX30102, the signal power is derived from the mean amplitude of the PPG waveform, while noise power is estimated from the standard deviation of the signal fluctuations. This ensures that PPG signals with stronger signal components and minimal noise contribute more substantially to the fused output. [26]
+By assigning weights proportional to SNR, this fusion technique enhances the overall signal quality and minimizes the effect of low-quality or artifact-prone signals, leading to improved glucose estimation accuracy.
+Decision-Level Fusion
+Decision-level fusion dynamically selects the most reliable PPG signal based on the Signal Quality Index (SQI). Instead of averaging signals from multiple sites, this approach ensures that only high-quality signals contribute to glucose estimation. The selection process is guided by evaluating each site's SQI and dynamically adapting to changes in signal quality.
+The algorithm for decision-level fusion involves the following steps: First, the SQI is computed for each site, considering metrics such as low noise (standard deviation check) and waveform stability (pulse amplitude and PPI consistency). The site with the highest SQI is then selected for glucose estimation. If the SQI of a selected site drops below a predetermined threshold, the algorithm automatically switches to the next most reliable site, maintaining the overall accuracy of the glucose estimation process.
+Mathematical Representation:
+  
+
+In this expression,   ​ represents the Signal Quality Index for site   . By dynamically selecting the most reliable signals, this method ensures that only high-quality data are utilized in the estimation process, minimizing the impact of noise and maintaining robust system performance.
+3.6.4 Machine Learning for Glucose Estimation
+This section presents the machine learning methodology used to estimate blood glucose levels from single-site and multi-site PPG signals. The primary objective is to determine whether multi-site fusion enhances glucose prediction accuracy compared to single-site PPG data. The methodology includes the data preparation process, model training, and evaluation metrics used to assess performance.
+Overview of Machine Learning Approach
+Machine learning is utilized to establish a mathematical relationship between extracted PPG features and reference blood glucose levels. Given the comparative nature of this study, a linear regression model is selected as the primary method for glucose estimation. Linear regression is preferred due to its simplicity, computational efficiency, and interpretability, making it suitable for both single-site and multi-site data comparisons.
+Linear regression is selected as the primary model for glucose estimation based on the following considerations:
+   1. Interpretability: Linear regression provides clear insights into the influence of each PPG feature on glucose estimation.
+   2. Computational Efficiency: The model requires minimal processing power, making it practical for low-power embedded devices such as the ESP32 microcontroller.
+   3. Consistency in Comparison: The same regression model is applied to both single-site and multi-site datasets, ensuring an unbiased evaluation of performance across the two approaches.
+Mathematical Representation of the Model
+The relationship between the extracted PPG features and estimated blood glucose levels is formulated as follows:
+  
+
+        In this equation,    represent the regression coefficients, which quantify the influence of each feature on glucose estimation. The term    corresponds to the pulse amplitude, a measure of blood volume changes, while PPI denotes the peak-to-peak interval, providing insights into vascular compliance. The variable MeanPPG refers to the average intensity of the PPG signal over a given time window, and SDPPG represents the standard deviation of the signal, which captures fluctuations in the waveform. Lastly, b is the bias term, representing the intercept of the regression model. Together, these features form the basis for estimating glucose levels through the linear regression approach.
+Input and Output Variables
+The input and output variables for the model are summarized in Table 3.3: Input and Output Variables for Glucose Estimation, which highlights the features used and the target output.
+Category
+	Description
+	Input Variables
+	
+
+Preprocessed PPG-derived features:
+	
+
+
+
+	Pulse Amplitude: Reflects blood volume changes.
+	
+
+
+
+	Peak-to-Peak Interval (PPI): Indicates vascular compliance.
+	
+
+
+
+	Mean PPG Value: Average signal intensity over a time window.
+	
+
+
+
+	Standard Deviation (SDPPG): Captures signal variability.
+	
+
+	Output Variable
+	Reference blood glucose level (mg/dL) obtained from an invasive glucometer.
+	Table 3.3: Input and Output Variables for Glucose Estimation
+By implementing this model, the study evaluates the comparative performance of single-site and multi-site PPG glucose estimation techniques, providing empirical evidence of whether multi-site fusion enhances prediction accuracy.
+Data Preparation for Machine Learning
+Feature Selection
+The selection of appropriate input features is critical for accurately estimating blood glucose levels using photoplethysmogram (PPG) signals. Extracted features from preprocessed PPG signals serve as independent variables in the regression model, enabling the prediction of blood glucose concentrations.
+Feature Name
+	Description
+	Unit
+	Pulse Amplitude (Pamp)
+	Difference between peak and trough in the PPG waveform
+	mV
+	Peak-to-Peak Interval (PPI)
+	Time duration between successive peaks in the PPG waveform
+	ms
+	Mean PPG Value
+	Average intensity of the PPG waveform over a given time window
+	mV
+	Standard Deviation (SDPPG)
+	Measure of variability within the PPG signal
+	mV
+	Site Indicator
+	Identifies whether data originates from the Fingertip (1), Wrist (2), or Earlobe (3)
+	-
+	Fused Signal (for multi-site trials)
+	Integrated signal from multiple PPG sites (via signal fusion)
+	mV
+	Table 3.4: Selected Features for Glucose Estimation.
+The target output variable for the regression model is the reference blood glucose level, measured in milligrams per deciliter (mg/dL). This reference value is obtained using an invasive glucometer and serves as the ground truth for training and validating the model.
+Dataset Splitting and Preprocessing
+The dataset used in this study is divided into two subsets for effective training and evaluation of the regression models.
+Aspect
+	Details
+	Dataset Splitting
+
+
+
+
+	Training Set (80%): Used to train the regression model and optimize its parameters.
+	Testing Set (20%): Reserved for model validation and performance assessment.
+	Model Types
+	Single-Site Model: Uses PPG data from individual sites (e.g., fingertip, wrist, earlobe).
+	Multi-Site Fusion Model: Uses fused PPG signals from multiple sites to enhance accuracy.
+	Preprocessing Steps
+	Standardization & Normalization: Ensures features are on a comparable scale, minimizing sensor variability.
+	Handling Missing Data: Removes or imputes missing points to preserve dataset integrity.
+	Table 3.5: Dataset Splitting and Preprocessing Overview.
+This approach ensures a reliable evaluation of the models while maintaining data consistency and accuracy. The standardized workflow facilitates a fair comparison between the single-site and multi-site models, highlighting the advantages of signal fusion for glucose estimation.
+3.6.5 Model Training and Optimization
+Least Squares Regression for Parameter Estimation
+The linear regression model is optimized using the Least Squares Regression method, which minimizes the sum of squared differences between the predicted and actual glucose values. This ensures that the model learns an optimal relationship between the input features and reference glucose levels. The primary cost function used is the Mean Squared Error (MSE), which measures the discrepancy between the predicted and actual glucose levels.
+The MSE is mathematically represented as:
+  
+
+where    represents the actual glucose level obtained from reference measurements,    is the predicted glucose level, and N is the total number of data points. A lower MSE indicates a more accurate regression model.
+To avoid iterative optimization methods such as gradient descent, the model computes weights (W) using a closed-form solution, which is expressed as:
+  
+
+Here, X represents the feature matrix (e.g., Pamp, PPI, MeanPPG, SDPPG), Y denotes the reference glucose values, and W is the regression coefficient matrix. This closed-form approach ensures computational efficiency while maintaining model reliability.
+3.6.6 Model Evaluation & Performance Metrics
+To assess the accuracy and clinical reliability of the single-site and multi-site regression models, the study employs the Mean Absolute Relative Difference (mARD) as a primary evaluation metric.
+Mean Absolute Relative Difference (mARD)
+The mARD quantifies the relative error between the predicted and actual glucose levels and is mathematically represented as:
+mARD Formula:
+  
+
+where   is the actual glucose level,   ​ is the estimated glucose level, and N represents the number of test samples. A lower mARD percentage reflects higher model accuracy, making it a critical metric for evaluating glucose prediction performance.
+3.6.7 Baseline Comparison & Validation
+The validation of the regression models is conducted by comparing predictions from the single-site and multi-site models against actual invasive glucose readings obtained from 30 individual samples. The validation process involves three main steps:
+   1. Invasive Reference Collection: Blood glucose levels for each subject are measured using a commercially available invasive glucometer, providing ground truth data.
+   2. Non-Invasive Prediction: The trained regression model estimates glucose levels based on PPG-derived features collected from the subjects.
+   3. Comparison & Statistical Analysis: Model performance is evaluated by computing the mARD (%) for each subject, assessing model consistency across participants, and determining whether multi-site fusion improves accuracy compared to single-site estimation.
+This evaluation process ensures the practical applicability of the model and provides empirical evidence on the effectiveness of multi-site signal fusion in improving glucose prediction accuracy.
+
+
+________________
+3.6.8 Summary of Model Training and Evaluation
+The performance of single-site and multi-site glucose estimation models is assessed using key evaluation metrics. These metrics provide a comprehensive overview of the model's predictive accuracy and reliability.
+Metric
+	Purpose
+	Ideal Performance
+	Workflow
+	Mean Absolute Relative Difference (mARD) %
+	Measures percentage error in glucose predictions.
+	Lower values (<10%) indicate higher accuracy.
+	   1. Extract PPG features from single-site and multi-site signals.
+   2. Use the trained regression model to predict glucose levels.
+   3. Compute mARD by comparing predicted values with invasive reference readings.
+	Baseline Comparison (Validation)
+	Assesses how well non-invasive glucose estimates align with invasive glucometer readings from test subjects.
+	Smaller differences between predicted and actual values indicate better model reliability.
+	   1. Measure actual glucose levels using a standard invasive glucometer for test subjects.
+   2. Predict glucose levels using the trained model.
+   3. Compare predicted values with actual readings to assess accuracy and consistency.
+	Table 3.6:  Evaluation Metrics for Model Performance
+The results obtained from these evaluation metrics will determine whether multi-site fusion improves glucose prediction accuracy compared to single-site models. If the multi-site model achieves lower mARD values and closer agreement with invasive readings, it would suggest that multi-site signal fusion enhances the reliability of non-invasive glucose monitoring.
+3.7 Conceptual Drawings of Devices Used
+        3.7.1 Fingertip Case
+  
+
+Figure 3.5:  Isometric Front View of the Fingertip Device
+________________
+  
+
+Figure 3.6:  Isometric Back View of the Fingertip Device
+Figure 3.5 illustrates a cross-sectional view of a model designed to house the MAX30102 sensor in a dedicated slot for optimal placement and functionality, with several key components contributing to its structural integrity and operational efficiency. The top lid (1) serves as a protective cover, providing structural support and easy access for assembly or maintenance, while the compression spring slot (2) ensures stable contact between the sensor and the target surface, minimizing motion artifacts during data collection. A nut and bolt slot (3) secures the top and bottom lids firmly, maintaining the assembly’s integrity. To facilitate wiring, the design includes a wire passthrough (4), allowing organized and secure routing of sensor wires to external systems such as a microcontroller. The MAX30102 slot (5) is precisely measured to hold the sensor securely, ensuring proper alignment for accurate data acquisition, and a wood screw slot (6) is provided to fasten the case to surfaces or devices for added stability. The bottom lid (7) completes the design, serving as a structural base and offering a mounting platform for integration into larger systems.
+3.7.2 Wrist Case
+  
+
+Figure 3.7:  Isometric View of the Wrist Device
+The wrist case design, as shown in Figure 3.6, is inspired by a wristwatch and incorporates features that ensure both functionality and comfort. It includes nylon webbing inserts (1) that act as straps, providing a secure and adjustable fit for the user’s wrist, ensuring comfort during extended use. At the center of the design is the MAX30102 sensor slot (2), a precisely measured cavity that holds the sensor securely in place, ensuring proper alignment with the skin for accurate PPG signal acquisition while minimizing motion artifacts. To facilitate connectivity, the design features a sensor wire passthrough (3), a hole that allows wires from the sensor to pass through seamlessly for reliable integration with external devices, such as microcontrollers.
+________________
+3.7.3 Earlobe Case
+  
+
+Figure 3.8:  Isometric View of the Earlobe Device
+The earlobe case design, as shown in Figure 3.7, resembles a wooden clothesline clip, incorporating features that ensure secure placement and functionality of the MAX30102 sensor. At the core of the design is the MAX30102 sensor slot (1), a precisely measured cavity that holds the sensor securely and ensures proper alignment with the skin for accurate data acquisition. The wire passthrough (2) provides a dedicated channel for neatly routing the sensor wires to external devices, such as microcontrollers, ensuring a stable and organized connection. The design consists of a top casing (3) and bottom casing (4), which clamp together to hold the earlobe gently but securely, minimizing movement while maintaining user comfort. A tension spring slot (5) is integrated into the structure to house a spring that applies consistent pressure, keeping the casings firmly in place without causing discomfort.
+3.8 Schematic Design
+Figure 3.8: Schematic Diagram of the Interfacing between the ESP32, TCA9548A and MAX30102  
+This schematic design illustrates the integration of an ESP32-S2-WROVER microcontroller with multiple MAX30102 pulse oximeter and heart rate sensors, powered directly through a USB 3.0 connection from a computer. The USB 3.0 provides a 5V input to the ESP32, which features an onboard voltage regulator to step down the voltage to 3V. This regulated 3V supply powers the ESP32, the TCA9548A I2C multiplexer, and the MAX30102 sensors. The ESP32 acts as the central microcontroller, managing data acquisition, processing, and communication via USB or wireless protocols. It connects to the TCA9548A multiplexer through its I2C interface, utilizing SDA (data) and SCL (clock) pins for efficient communication.
+
+
+The TCA9548A multiplexer allows the ESP32 to interface with multiple MAX30102 sensors on a single I2C bus by selectively routing the data and clock signals to individual sensors, thereby avoiding address conflicts. Four MAX30102 sensors are connected to the multiplexer’s output lines, with each sensor secured to the 3V power supply and the shared I2C bus. The sensors’ SDA and SCL pins handle data and clock signals, while their VDD and PGND pins connect to the power and ground lines, respectively. The common ground ensures stable signal transmission and minimizes electrical noise across the system.
+The USB 3.0-powered configuration enables the system to be compact and portable, operating directly from a computer for both power and data transfer. The inclusion of the multiplexer ensures seamless integration and reliable communication between the ESP32 and all connected sensors.
+________________
+
+
+3.9 Ethical Considerations
+This study will adhere strictly to ethical principles to ensure the rights, safety, and well-being of all participants.
+Institutional Approval: Prior approval will be sought from the Medical Clinic of Cebu Technological University - Main Campus before commencing any participant recruitment or data collection.
+Informed Consent: Potential participants will receive a detailed information sheet explaining the study's purpose, procedures, potential risks and benefits, duration, confidentiality measures, and their right to withdraw at any time without penalty. Written informed consent will be obtained from all participants before enrollment.
+Participant Safety: The non-invasive PPG measurements pose minimal risk. The invasive reference measurement involves a finger-prick, which carries a very small risk of discomfort, bruising, or infection. Standard sterile lancets and procedures will be used by trained personnel or under clinical supervision to minimize these risks. Participants will be informed about these risks.
+Confidentiality and Data Privacy: All collected data will be anonymized using unique participant codes. Identifying information will be stored separately and securely, accessible only to the research team. Data used for analysis and publication will be fully anonymized. Digital data will be stored on password-protected computers and/or encrypted storage media.
+Voluntary Participation: Participation is entirely voluntary. Participants can refuse to answer any questions or withdraw from the study at any point without consequence.
+Data Usage: Data will be used solely for the research purposes outlined in this proposal and potential academic publications or presentations.
+
+
+
+
+Gantt Chart
+
+
+
+
+	Oct 2024
+	Nov 2024
+	Dec 2024
+	Jan 2025
+	Feb 2025
+	Mar 2025
+	Apr 2025
+	May 2025
+	Research Planning
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Literature Review
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Hardware Development
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Software Development
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	System Integration
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Testing and Validation
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Optimization
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Deployment
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	Table 3.7:  Gantt Chart for Project Milestones
+
+
+________________
+Budgetary Requirement
+        The table below shows the comprehensive breakdown of the budgetary requirement for conducting the  project being proposed.
+
+
+Material/Resources
+	Quantity
+	Unit Price
+	Cost
+	MAX30102 Sensor
+	3
+	₱550
+	₱1,650
+	ESP32 Microcontroller
+	1
+	₱350
+	₱350
+	Breadboard
+	1
+	₱120
+	₱120
+	Jumper Wires (Set)
+	1
+	₱100
+	₱100
+	3D Printed Parts (Sensor Clips)
+	3
+	₱150
+	₱450
+	Resistors, Capacitors, etc. (if needed)
+	3
+	₱50
+	₱150
+	TCA9548A 12C Multiplexer
+	1
+	₱300
+	₱300
+	Total
+	₱3,120
+	Table 3.8:  Materials and Resources Expenses
+
+
+
+
+
+
+
+
+
+
+________________
+References
+[1] A. Hina and W. Saadeh, “Noninvasive Blood Glucose Monitoring Systems Using Near‐Infrared Technology—A Review,” Sensors, vol. 22, no. 13. MDPI, Jul. 01, 2022. doi: 10.3390/s22134855.
+[2] A. Hina, H. Nadeem, A. R. Aslam, and W. Saadeh, "Live demonstration: A single LED PPG-based noninvasive glucose monitoring prototype system," in Proceedings of IEEE International Conference, 2019.
+[3] A. A. Alian and K. H. Shelley, “Photoplethysmography,” Best Practice and Research: Clinical Anaesthesiology, vol. 28, no. 4. Bailliere Tindall Ltd, pp. 395–406, 2014. doi: 10.1016/j.bpa.2014.08.006.
+[4] M. A. Almarshad, M. S. Islam, S. Al-Ahmadi, and A. S. Bahammam, “Diagnostic Features and Potential Applications of PPG Signal in Healthcare: A Systematic Review,” Healthcare (Switzerland), vol. 10, no. 3. MDPI, Mar. 01, 2022. doi: 10.3390/healthcare10030547.
+[5] H. C. Wei et al., “Percussion entropy analysis of synchronized ECG and PPG signals as a prognostic indicator for future peripheral neuropathy in type 2 diabetic subjects,” Diagnostics, vol. 10, no. 1, 2020, doi: 10.3390/diagnostics10010032.
+[6] N. Nirala, R. Periyasamy, B. K. Singh, and A. Kumar, “Detection of type-2 diabetes using characteristics of toe photoplethysmogram by applying support vector machine,” Biocybernetics and Biomedical Engineering, vol. 39, no. 1, pp. 38–51, Jan. 2019, doi: 10.1016/j.bbe.2018.09.007.
+[7] B. Bogue-Jimenez, X. Huang, D. Powell, and A. Doblas, “Selection of Noninvasive Features in Wrist-Based Wearable Sensors to Predict Blood Glucose Concentrations Using Machine Learning Algorithms,” Sensors, vol. 22, no. 9, May 2022, doi: 10.3390/s22093534.
+[8] L. M. Pires and J. Martins, “Design and Implementation of a Low-Power Device for Non-Invasive Blood Glucose,” Designs, vol. 8, no. 4, Aug. 2024, doi: 10.3390/designs8040063.
+[9] S. Gupta, A. Singh, and A. Sharma, “Denoising and Analysis of PPG Acquired From Different Body Sites Using Savitzky Golay Filter,” in IEEE Region 10 Annual International Conference, Proceedings/TENCON, Institute of Electrical and Electronics Engineers Inc., 2022. doi: 10.1109/TENCON55691.2022.9978083.
+[10] R. Xiao, C. Ding, and X. Hu, “Time Synchronization of Multimodal Physiological Signals through Alignment of Common Signal Types and Its Technical Considerations in Digital Health,” Journal of Imaging, vol. 8, no. 5, May 2022, doi: 10.3390/jimaging8050120.
+[11] M. Bentham, G. Stansby, and J. Allen, “Innovative Multi-Site Photoplethysmography Analysis for Quantifying Pulse Amplitude and Timing Variability Characteristics in Peripheral Arterial Disease,” Diseases, vol. 6, no. 3, p. 81, Sep. 2018, doi: 10.3390/diseases6030081.
+[12] S. Maqsood, S. Xu, M. Springer, and R. Mohawesh, “A Benchmark Study of Machine Learning for Analysis of Signal Feature Extraction Techniques for Blood Pressure Estimation Using Photoplethysmography (PPG),” IEEE Access, vol. 9. Institute of Electrical and Electronics Engineers Inc., pp. 138817–138833, 2021. doi: 10.1109/ACCESS.2021.3117969.
+[13] J. Li et al., “Noninvasive Blood Glucose Monitoring Using Spatiotemporal ECG and PPG Feature Fusion and Weight-Based Choquet Integral Multimodel Approach,” IEEE Transactions on Neural Networks and Learning Systems, 2023, doi: 10.1109/TNNLS.2023.3279383.
+[14] S. Satter, T.-H. Kwon, and K.-D. Kim, “Weighted Ensemble Based Noninvasive HbA1c Estimation from PPG signals Using Machine Learning Algorithms,” in 2024 IEEE International Conference on Consumer Electronics-Asia (ICCE-Asia), IEEE, Nov. 2024, pp. 1–3. doi: 10.1109/ICCE-Asia63397.2024.10773814.
+[15] Y. Roshini, P. Durgaprasadarao, R. Sai Sarvan, L. v. Koushik Varma U, and V. Sireesha, “High Precision Non-Invasive Blood Glucose Monitoring Device for Diabetic Patients,” in 2023 International Conference on Computer Communication and Informatics, ICCCI 2023, Institute of Electrical and Electronics Engineers Inc., 2023. doi: 10.1109/ICCCI56745.2023.10128321.
+[16] K. M. Abubeker and S. Baskar, “A Machine Learning Strategy for Internet-of-Things-Enabled Diabetic Prediction to Mitigate Pneumonia Risk,” in 2022 10th International Conference on Reliability, Infocom Technologies and Optimization (Trends and Future Directions), ICRITO 2022, Institute of Electrical and Electronics Engineers Inc., 2022. doi: 10.1109/ICRITO56286.2022.9964842.
+[17] G. Hammour and D. P. Mandic, “An In-Ear PPG-Based Blood Glucose Monitor: A Proof-of-Concept Study,” Sensors, vol. 23, no. 6, Mar. 2023, doi: 10.3390/s23063319.
+[18] S. Habbu, M. Dale, and R. Ghongade, “Estimation of blood glucose by non-invasive method using photoplethysmography,” Sādhanā, vol. 44, May 2019, doi: 10.1007/s12046-019-1118-9S.
+[19] M. Nazmul Islam Shuzan et al., “QU-GM: An IoT Based Glucose Monitoring System from Photoplethysmography, Blood Pressure, and Demographic Data Using Machine Learning,” IEEE Access, vol. 12, pp. 77774–77790, 2024, doi: 10.1109/ACCESS.2024.3404971.
+[20] R. Feng et al., “Noninvasive blood glucose monitor via multi-sensor fusion and its clinical evaluation,” Sensors and Actuators, B: Chemical, vol. 332, Apr. 2021, doi: 10.1016/j.snb.2021.129445.
+[21] S. Ali et al., “Development and Evaluation of a Sensor-Based Non-Invasive Blood Glucose Monitoring System Using Near-Infrared Spectroscopy,” in ICSEE 2024, Basel Switzerland: MDPI, Nov. 2024, p. 19. doi: 10.3390/ecsa-11-20395.
+[22] T. Mahmud et al., Non-invasive Blood Glucose Estimation Using Multi-sensor Based Portable and Wearable System. IEEE, 2019.
+[23] E. Monte-Moreno, “Non-invasive estimate of blood glucose and blood pressure from a photoplethysmograph by means of machine learning techniques,” Artificial Intelligence in Medicine, vol. 53, no. 2, pp. 127–138, Oct. 2011, doi: 10.1016/j.artmed.2011.05.001.
+[24] J. L. Isaksen et al., “Raw photoplethysmogram waveforms versus peak-to-peak intervals for machine learning detection of atrial fibrillation: Does waveform matter?,” Computer Methods and Programs in Biomedicine, vol. 260, Mar. 2025, doi: 10.1016/j.cmpb.2024.108537.
+[25] Maxim Integrated, MAX30102 Pulse Oximeter and Heart-Rate Sensor for Wearable Health. San Jose, CA, USA: Maxim Integrated, 2017. [Online]. Available: https://www.analog.com/media/en/technical-documentation/data-sheets/MAX30102.pdf
+[26] Maxim Integrated, Signal-to-Noise Ratio as a Quantitative Measure for Optical Biosensors. San Jose, CA, USA: Maxim Integrated, 2021. [Online]. Available: https://www.analog.com/media/en/technical-documentation/design-notes/signaltonoise-ratio-as-a-quantitative-measure-for-optical-biosensors.pdf
+[27] M. Zeynali, K. Alipour, B. Tarvirdizadeh, and M. Ghamari, “Non-invasive blood glucose monitoring using PPG signals with various deep learning models and implementation using TinyML,” Scientific Reports, vol. 15, Art. no. 581, Jan. 2025. [Online]. Available: https://www.nature.com/articles/s41598-024-84265-8
+[28] A. Kermani and H. Esmaeili, The dataset of photoplethysmography signals collected from a pulse sensor to measure blood glucose level, Mendeley Data, V3, Jul. 20, 2023. [Online]. Available: https://doi.org/10.17632/37pm7jk7jn.3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[a]Will remove this soon (we will only be using fingertip device)
+[b]basin i question ta ani
+[c]we'll change this objective
+[d]Added this section from the recent study @regilkent.canonigo@gmail.com  found
+[e]added this too
+[f]added this
+[g]to change or consult
+[h]sir @ivangsuralta@gmail.com, i concise version nalang sya do. since naa na ang full details sa ubos
+_Assigned to ivangsuralta@gmail.com_
+[i]mura lang sya ug overview sa ato research and experiment process
+[j]we can also use 3 finger sites
